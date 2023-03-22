@@ -18,7 +18,6 @@ class BaseModel:
     
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
-        kwargs_copy = kwargs.copy()
         
         if not kwargs:
             from models import storage
