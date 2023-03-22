@@ -55,3 +55,40 @@ class FileStorage:
                         self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
+
+        def do_create(self, arg):
+            """
+            Creates a new instance of a class, saves it to the JSON file, and prints the id
+            Usage: create <class name> <param 1> <param 2> <param 3>...
+            """
+            args = arg.split()
+            if len(args) == 0:
+                print("** class name missing **")
+                return
+            class_name = args[0]
+            if class_name not in models.classes:
+                print("** class doesn't exist **")
+                return
+            kwargs = {}
+            for arg in args[1:]:
+                if "=" not in arg:
+                    continue
+                key, val = arg.split("=", 1)
+                if not val:
+                    continue
+                if val[0] == '"' and val[-1] == '"' and len(val) > 1:
+                    val = val[1:-1].replace("_", " ").replace('\\"', '"')
+                    kwargs[key] = val
+                elif '.' in val:
+                    try:
+                        kwargs[key] = float(val)
+                    except ValueError:
+                        continue
+                else:
+                    try:
+                        kwargs[key] = int(val)
+                    except ValueError:
+                        continue
+            new_obj = models.classes[class_name](**kwargs)
+            new_obj.save()
+            print(new_obj.id)
